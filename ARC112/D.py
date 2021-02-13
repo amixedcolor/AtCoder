@@ -109,57 +109,11 @@ if not(is_full or is_null) :
     if (check_is_enough(j_set, range(1, w-1)) and w<=h) or \
     (check_is_enough(i_set, range(1, h-1)) and h<=w) :
       break
-
-  news = []
-  for i in range(1, h-1) :
-    row = [True]
-    if field[i][0] != 1 and i not in i_set :
-      row.append([i, 0])
-    news.append(row)
-  for j in range(1, w-1) :
-    row = [False]
-    if field[0][j] != 1 and j not in j_set:
-      row.append([0, j])
-    news.append(row)
-  count = 0
-  for row in news :
-    for p, q in row[1:] :
-      if row[0] == True :
-        for j in range(1, w-1) :
-          # print(field[i][j] == 1)
-          if field[p][j] == 1 and p not in i_set :
-            next_i_set, next_j_set = road_search(j, True, [p, j])
-            i_set |= next_i_set
-            j_set |= next_j_set
-            count += 1
-          if (check_is_enough(j_set, range(1, w-1)) and w<=h) or \
-          (check_is_enough(i_set, range(1, h-1)) and h<=w) :
-            break
-        else :
-          break
-      else :
-        for i in range(1, h-1) :
-          if field[i][q] == 1 and q not in j_set :
-            next_i_set, next_j_set = road_search(i, False, [i, q])
-            i_set |= next_i_set
-            j_set |= next_j_set
-            count += 1
-          if (check_is_enough(j_set, range(1, w-1)) and w<=h) or \
-          (check_is_enough(i_set, range(1, h-1)) and h<=w) :
-            break
-        else :
-          break
-      if (check_is_enough(j_set, range(1, w-1)) and w<=h) or \
-      (check_is_enough(i_set, range(1, h-1)) and h<=w) :
-        break
-    else :
-      break
-    
-
+      
   c_i = h
   c_j = w
-  print(sorted(list(i_set)))
-  print(sorted(list(j_set)))
+  # print(sorted(list(i_set)))
+  # print(sorted(list(j_set)))
   if 0 in i_set :
     if h-1 in i_set :
       c_i -= len(i_set)
@@ -174,6 +128,58 @@ if not(is_full or is_null) :
       c_j -= len(j_set) + 1
   else :
     c_j -= len(j_set) + 2
+  # print(c_i, c_j)
+  
+  news = []
+  row = [True]
+  for i in range(1, h-1) :
+    if field[i][0] != 1 and i not in i_set :
+      row.append([i, 0])
+  news.append(row)
+  row = [False]
+  for j in range(1, w-1) :
+    if field[0][j] != 1 and j not in j_set:
+      row.append([0, j])
+  news.append(row)
+  # print(news)
+  i_completes = 0
+  j_completes = 0
+  for row in news :
+    for p, q in row[1:] :
+      if row[0] == True :
+        for j in range(1, w-1) :
+          # print(field[i][j] == 1)
+          if field[p][j] == 1 and p not in i_set :
+            next_i_set, next_j_set = road_search(j, True, [p, j])
+            i_set |= next_i_set
+            j_set |= next_j_set
+            # print(next_i_set, next_j_set)
+            i_completes += len(next_i_set) - 1
+            j_completes += len(next_j_set) - 1
+          if (check_is_enough(j_set, range(1, w-1)) and w<=h) or \
+          (check_is_enough(i_set, range(1, h-1)) and h<=w) :
+            break
+        else :
+          break
+      else :
+        for i in range(1, h-1) :
+          if field[i][q] == 1 and q not in j_set :
+            next_i_set, next_j_set = road_search(i, False, [i, q])
+            i_set |= next_i_set
+            j_set |= next_j_set
+            # print(next_i_set, next_j_set)
+            i_completes += len(next_i_set) - 1
+            j_completes += len(next_j_set) - 1
+          if (check_is_enough(j_set, range(1, w-1)) and w<=h) or \
+          (check_is_enough(i_set, range(1, h-1)) and h<=w) :
+            break
+        else :
+          break
+      if (check_is_enough(j_set, range(1, w-1)) and w<=h) or \
+      (check_is_enough(i_set, range(1, h-1)) and h<=w) :
+        break
+    else :
+      break
 
 if is_full :
   print(0)
@@ -182,9 +188,9 @@ elif is_null :
     print(h-2)
   else :
     print(w-2)
-elif c_i < 0 or c_j < 0 :
+elif c_i - i_completes < 0 or c_j - j_completes < 0 :
   print(0)
-elif c_i < c_j :
-  print(c_i+count)
+elif c_i - i_completes < c_j - j_completes :
+  print(c_i - i_completes)
 else :
-  print(c_j+count)
+  print(c_j - j_completes)
